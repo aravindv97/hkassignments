@@ -6,17 +6,55 @@
     let globalId = 1;
     let todoState = [];
     let oldTodoState = [];
+    
 
-    function addTodoToDom() {
-      
+    function addTodoToDom(added) {
+      let todoelem = document.getElementById('todos');
+        let todo1title = document.createElement('div');
+        let todo1desc = document.createElement('div');
+        todo1title.id = added[0].id
+        todo1title.innerHTML = added[0].title
+        todo1desc.innerHTML = added[0].description
+        todo1title.appendChild(todo1desc)
+        let update = document.createElement('button')
+        update.innerHTML = 'Update'
+        update.addEventListener('click',() => { updateTodoInDom(added)})
+        let done = document.createElement('button')
+        done.innerHTML = 'Mark as done'
+        done.addEventListener('click',() => { removeTodoFromDom(added)})
+        todo1title.appendChild(update);
+        todo1title.appendChild(done);
+        todoelem.appendChild(todo1title);
     }
 
     function removeTodoFromDom(todo) {
-      
+      let todoelem = document.getElementById('todos');
+      todoelem.removeChild(document.getElementById(todo[0].id));
     }
 
-    function updateTodoInDom(oldTodo, newTodo) {
+    function saveToDo(edited){
+      let node1 = [...(edited.childNodes)];
+
+      let todo1desc = document.createElement('div');
+      todo1desc.innerHTML = edited.innerHTML
+
+      node1[1].parentNode.replaceChild(todo1desc,node1[1]);
+      node1[2].innerHTML = 'Update'
+      node1[2].removeEventListener('click', () => { saveToDo(todoelem) })
+      node1[2].addEventListener('click', () => { updateTodoInDom(todo1desc) })
+    }
+
+    function updateTodoInDom(todo) {
+      let todoelem = document.getElementById(todo[0].id);
+        let node1 = [...(todoelem.childNodes)];
         
+        let editable = document.createElement('input')
+        editable.innerHTML = node1[1].innerHTML
+
+        node1[1].parentNode.replaceChild(editable,node1[1]);
+        node1[2].innerHTML = 'Save'
+        node1[2].removeEventListener('click', () => { updateTodoInDom(todo1desc) })
+        node1[2].addEventListener('click', () => { saveToDo(todoelem) })
     }
 
     function updateState(newTodos) {
@@ -25,13 +63,18 @@
       // 1. added
       // 2. deleted
       // 3. updated
-      const added = [];
-      const deleted = [];
-      const updated = [];
+      let added = [];
+      let deleted = [];
+      let updated = [];
       // calculate these 3 arrays
+      added = newTodos.filter(x => !oldTodoState.includes(x));
+      deleted = oldTodoState.filter(x => !newTodos.includes(x));
       // call addTodo, removeTodo, updateTodo functions on each of the
       // elements
-      oldTodoState = newTodos;
+      oldTodoState = [...newTodos];
+      
+      
+      addTodoToDom(added);
     }
 
     function addTodo() {
